@@ -4,10 +4,12 @@
 -- Implementación de QuickSort en Haskell
 quickSort :: (Ord a) => [a] -> [a]
 quickSort [] = []
-quickSort (p:xs) =
-    let menores = [x | x <- xs, x < p]
-        mayoresIguales = [x | x <- xs, x >= p]
-    in quickSort menores ++ [p] ++ quickSort mayoresIguales
+quickSort xs =
+    let pivote = last xs   -- pivote es el último elemento
+        resto = init xs   -- resto es la lista sin el último elemento
+        menores = [x | x <- resto, x < pivote]
+        mayoresIguales = [x | x <- resto, x >= pivote]
+    in quickSort menores ++ [pivote] ++ quickSort mayoresIguales
 
 -- Función para imprimir una lista en una línea
 imprimirArreglo :: Show a => [a] -> IO ()
