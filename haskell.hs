@@ -1,6 +1,8 @@
 -- Función para hacer swap no es necesaria porque Haskell no tiene variables mutables,
 -- sino que se crea una nueva lista ordenada con QuickSort
 
+import Data.Time.Clock
+
 -- Implementación de QuickSort en Haskell
 quickSort :: (Ord a) => [a] -> [a]
 quickSort [] = []
@@ -18,7 +20,16 @@ imprimirArreglo xs = putStrLn $ unwords $ map show xs
 -- Función principal main
 main :: IO ()
 main = do
-    let arreglo = [15,0,2,10,20,17,5]
+    -- Medir tiempo de ejecución
+    start <- getCurrentTime
+
+    let arreglo = [1,2,3,4,5,6,7,8,9]
     imprimirArreglo arreglo
     let arregloOrdenado = quickSort arreglo
     imprimirArreglo arregloOrdenado
+
+    -- Calcular y mostrar el tiempo de ejecución en nanosegundos
+    end <- getCurrentTime
+    let diff = diffUTCTime end start
+        diffInNanoseconds = diff * 1000000000  -- Convertir a nanosegundos
+    putStrLn $ "Tiempo de ejecucion: " ++ show (round diffInNanoseconds) ++ " nanosegundos"
