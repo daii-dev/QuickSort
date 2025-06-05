@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 	"runtime"
 	"time"
 )
@@ -28,30 +29,23 @@ func partition(arr []int, low, high int) int {
 }
 
 func main() {
-	arr := []int{29, 10, 14, 37, 13, 2}
+	n := 10000
+	arr := make([]int, n)
 
-	// Forzar recolección de basura para limpiar antes de medir memoria
-	runtime.GC()
+	// Llenar el arreglo con números aleatorios entre 0 y 999999
+	rand.Seed(time.Now().UnixNano())
 
-	// Leer memoria antes
-	var mStart runtime.MemStats
-	runtime.ReadMemStats(&mStart)
+	// Medir tiempo de ejecución
+	startTime := time.Now()
 
-	start := time.Now()
+	quickSort(arr, 0, n-1)
 
-	quickSort(arr, 0, len(arr)-1)
+	duration := time.Since(startTime)
+	fmt.Printf("Tiempo de ejecución: %v\n", duration)
 
-	elapsed := time.Since(start)
-
-	// Leer memoria después
-	var mEnd runtime.MemStats
-	runtime.ReadMemStats(&mEnd)
-
-	// Calcular uso de memoria
-	usedBytes := mEnd.Alloc - mStart.Alloc
-	usedMB := float64(usedBytes) / (1024 * 1024)
-
-	//fmt.Println("Arreglo ordenado:", arr)
-	fmt.Printf("Tiempo de ejecución: %s\n", elapsed)
-	fmt.Printf("Memoria usada: %d bytes (%.5f MB)\n", usedBytes, usedMB)
+	// Medir memoria usada
+	var memStats runtime.MemStats
+	runtime.ReadMemStats(&memStats)
+	// Memoria en bytes
+	fmt.Printf("Memoria usada: %v bytes (%v MB)\n", memStats.Alloc, float64(memStats.Alloc)/1024/1024)
 }
