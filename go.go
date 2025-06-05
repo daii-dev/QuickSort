@@ -2,49 +2,56 @@ package main
 
 import (
 	"fmt"
+	"runtime"
+	"time"
 )
 
-// swap intercambia dos elementos en el slice
-func swap(array []int, i, j int) {
-	aux := array[i]
-	array[i] = array[j]
-	array[j] = aux
+func quickSort(arr []int, low, high int) {
+	if low < high {
+		p := partition(arr, low, high)
+		quickSort(arr, low, p-1)
+		quickSort(arr, p+1, high)
+	}
 }
 
-// particion realiza la partición para quicksort
-func particion(array []int, inicio, fin int) int {
-	pivote := array[inicio]
-	i := inicio + 1
-	for j := i; j <= fin; j++ {
-		if array[j] < pivote {
-			swap(array, i, j)
+func partition(arr []int, low, high int) int {
+	pivot := arr[high]
+	i := low - 1
+	for j := low; j < high; j++ {
+		if arr[j] < pivot {
 			i++
+			arr[i], arr[j] = arr[j], arr[i]
 		}
 	}
-	swap(array, inicio, i-1)
-	return i - 1
-}
-
-// quickSort implementa el algoritmo QuickSort
-func quickSort(array []int, inicio, fin int) {
-	if inicio < fin {
-		pivote := particion(array, inicio, fin)
-		quickSort(array, inicio, pivote-1)
-		quickSort(array, pivote+1, fin)
-	}
-}
-
-// imprimirArreglo imprime los elementos del slice
-func imprimirArreglo(array []int) {
-	for _, valor := range array {
-		fmt.Printf("%d ", valor)
-	}
-	fmt.Println()
+	arr[i+1], arr[high] = arr[high], arr[i+1]
+	return i + 1
 }
 
 func main() {
-	arreglo := []int{15, 0, 2, 10, 20, 17, 5}
-	imprimirArreglo(arreglo)
-	quickSort(arreglo, 0, len(arreglo)-1)
-	imprimirArreglo(arreglo)
+	arr := []int{29, 10, 14, 37, 13, 2}
+
+	// Forzar recolección de basura para limpiar antes de medir memoria
+	runtime.GC()
+
+	// Leer memoria antes
+	var mStart runtime.MemStats
+	runtime.ReadMemStats(&mStart)
+
+	start := time.Now()
+
+	quickSort(arr, 0, len(arr)-1)
+
+	elapsed := time.Since(start)
+
+	// Leer memoria después
+	var mEnd runtime.MemStats
+	runtime.ReadMemStats(&mEnd)
+
+	// Calcular uso de memoria
+	usedBytes := mEnd.Alloc - mStart.Alloc
+	usedMB := float64(usedBytes) / (1024 * 1024)
+
+	//fmt.Println("Arreglo ordenado:", arr)
+	fmt.Printf("Tiempo de ejecución: %s\n", elapsed)
+	fmt.Printf("Memoria usada: %d bytes (%.5f MB)\n", usedBytes, usedMB)
 }
